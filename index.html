@@ -92,7 +92,6 @@
 <body class="antialiased text-brand">
 
 <!-- ============ SALE OFFER BAR ============ -->
-<!-- Edit this text any time you want to change or remove the running offer -->
 <div class="bg-accent text-white text-center text-xs sm:text-sm font-semibold py-2 px-4">
   🔥 Sale Live: Flat 10% OFF on your first order — pay only on delivery!
 </div>
@@ -283,7 +282,7 @@
 
     <div class="p-6 sm:p-8 max-h-[90vh] overflow-y-auto scrollbar-thin">
 
-    <div id="details-image-wrap" class="relative w-full aspect-square bg-slate-50 rounded-xl flex items-center justify-center overflow-hidden mb-3 select-none" style="overflow: hidden;">
+    <div id="details-image-wrap" class="relative w-full aspect-square bg-slate-50 rounded-xl flex items-center justify-center overflow-hidden mb-3 select-none">
       <span id="details-discount-badge" class="hidden absolute top-3 left-3 z-10 bg-accent text-white text-xs font-bold px-2.5 py-1 rounded"></span>
 
       <div id="details-image-track" class="w-full h-full flex items-center justify-center"></div>
@@ -442,14 +441,6 @@
 
 <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
 
-<!--
-  ============================================================
-  HIDDEN GOOGLE FORM (optional background order log)
-  Keeps a backup record of every order in a Google Sheet.
-  Delete this block (and the JS that references it) any time
-  if you don't want to use a Google Form for logging.
-  ============================================================
--->
 <form id="hidden-google-form"
       action="https://docs.google.com/forms/d/e/1FAIpQLSfk5PUr0yY5j_oufbGGPxe7hpuLSiWnv-erDjMFybR8MkNtqA/formResponse"
       method="POST"
@@ -474,7 +465,6 @@
   const WHATSAPP_NUMBER = '918343876377';
   const SHOP_NAME = 'Rizora Market';
 
-  // ---- Categories: edit this list any time you want to add/remove a category ----
   const CATEGORIES = [
     { slug: 'all',                   label: 'All Products',           icon: '🛍️' },
     { slug: 'home_kitchen',          label: 'Home & Kitchen',         icon: '🏠' },
@@ -708,12 +698,13 @@
 
     detailsImagePlaceholder.classList.add('hidden');
 
-    // sliding track: each slide is full-width, track shifts via translateX
+    // Sliding track CSS fix (ক্লিন স্লাইডার এবং পারফেক্ট ইমেজ ফিট)
     detailsImageTrack.style.cssText = `display:flex; flex-wrap:nowrap; width:100%; height:100%; transition: transform 0.3s ease;`;
+    
     detailsImageTrack.innerHTML = images.map((src, i) => `
-      <div class="shrink-0 flex items-center justify-center" style="width:100%; min-width:100%; max-width:100%; height:100%;">
-        <img src="${src}" alt="Photo ${i + 1}" loading="lazy" class="w-full h-full object-contain p-4"
-          onerror="this.closest('div').style.display='none';">
+      <div class="shrink-0 w-full h-full flex items-center justify-center p-2 box-border">
+        <img src="${src}" alt="Photo ${i + 1}" loading="lazy" class="max-w-full max-h-full object-contain mx-auto"
+          onerror="this.style.opacity='0.3';">
       </div>
     `).join('');
 
@@ -725,11 +716,12 @@
 
     if (showArrows) {
       detailsImgDots.innerHTML = images.map((_, i) =>
-        `<span class="gallery-dot h-1.5 rounded-full bg-white/70 transition-all" data-idx="${i}"></span>`
+        `<span class="gallery-dot h-1.5 rounded-full bg-white/70 transition-all cursor-pointer" data-idx="${i}"></span>`
       ).join('');
+      
       detailsThumbRow.innerHTML = images.map((src, i) => `
-        <button class="gallery-thumb shrink-0 w-16 h-16 rounded-lg border-2 overflow-hidden bg-slate-50" data-idx="${i}">
-          <img src="${src}" alt="Thumbnail ${i + 1}" class="w-full h-full object-contain p-1" onerror="this.parentElement.style.display='none';">
+        <button class="gallery-thumb shrink-0 w-16 h-16 rounded-lg border-2 overflow-hidden bg-slate-50 flex items-center justify-center p-1" data-idx="${i}">
+          <img src="${src}" alt="Thumbnail ${i + 1}" class="max-w-full max-h-full object-contain" onerror="this.style.opacity='0.3';">
         </button>
       `).join('');
 
@@ -888,7 +880,6 @@
     submitBtn.disabled = true;
     submitBtnText.textContent = 'Confirming…';
 
-    // background log to Google Sheet (optional — safe to remove)
     document.getElementById('gform-name').value = name;
     document.getElementById('gform-mobile').value = mobile;
     document.getElementById('gform-whatsapp').value = whatsapp;
