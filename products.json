@@ -1,0 +1,45 @@
+[
+  {
+    "id": 1,
+    "title": "Compact Chopper with Blades effortlessly Chopping (HK001)",
+    "description": "Compact Chopper with Blades effortlessly Chopping Big Size Kitchen Dori Handy Vegetable and Fruit Manual Onion Dry Fruit Salad Maker Vegetable Quick Chopper (450 ml, Green)",
+    "category": "home_kitchen",
+    "real_price": 301,
+    "offer_price": 159,
+    "images": [
+  "image/HK001/1.avif",
+  "image/HK001/2.avif",
+  "image/HK001/3.avif",
+  "image/HK001/4.avif"
+ ]
+  },
+{
+    "id": 2,
+    "title": "Glass oil Spray Dispenser Cooking 200ml (HK002)",
+    "description": "Glass oil Spray Dispenser Cooking 200ml Olive oil Spray Bottle Refillable Food Grade oil Vinegar Spritzer Sprinkler Sprayer Mister Used for Air Fryer,Salad Making,Frying,BBQ,black",
+    "category": "home_kitchen",
+    "real_price": 289,
+    "offer_price": 189,
+    "images": [
+  "image/HK002/1.avif",
+  "image/HK002/2.avif",
+  "image/HK002/3.avif",
+  "image/HK002/4.avif"
+ ]
+  },
+  {
+    "id": 3,
+    "title": "Stella Collections Multipurpose Storage Organizer(HK003)",
+    "description": "Stella Collections Multipurpose Storage Organizer Mild Steel 2 Layer Storage Organizer Rack for Kitchen Standing Rack Shelf Storage Holder Kitchen Rack/Spice Shelf/Kitchen Racks/Pantry Storage Organizer/Spice Rack Set for Kitchen",
+    "category": "home_kitchen",
+    "real_price": 449,
+    "offer_price": 369,
+    "images": [
+  "image/HK003/1.avif",
+  "image/HK003/2.avif",
+  "image/HK003/3.avif",
+  "image/HK003/4.avif"
+ ]
+  }
+  
+]
