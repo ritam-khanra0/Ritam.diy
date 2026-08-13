@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+<meta name="theme-color" content="#05050a" />
+<title>Happy Birthday, Ayisha 🎂</title>
+<meta name="description" content="A gift, made just for you." />
+
+<!-- Google Fonts: Playfair Display (headlines), Manrope (body/UI), Caveat (handwritten letter) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Manrope:wght@300;400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!--
+=====================================================================
+  EDIT ONLY THIS SECTION — everything you need to personalize lives here.
+  Nothing below this block needs to be touched.
+=====================================================================
+-->
+<script>
+  window.GIFT_CONFIG = {
+    // The name shown throughout the site
+    recipientName: "Ayisha",
+
+    // Her age this birthday
+    age: 18,
+
+    // Your name, shown in the closing signature — replace with your real name
+    fromName: "Your Name",
+
+    // Replace each with a real photo path/URL, e.g. "photos/1.jpg"
+    // Keep at least 2 photos; remove unused lines + matching HTML block if you use fewer than 8.
+    photos: [
+      "photos/1.jpg",
+      "photos/2.jpg",
+      "photos/3.jpg",
+      "photos/4.jpg",
+      "photos/5.jpg",
+      "photos/6.jpg",
+      "photos/7.jpg",
+      "photos/8.jpg"
+    ],
+
+    // Replace with a path/URL to an mp3, e.g. "music/song.mp3". Leave empty ("") to hide the music toggle.
+    backgroundMusic: "music/song.mp3",
+
+    // Your handwritten letter. Use \n\n for a new paragraph.
+    letterMessage: "🎉🎂 Happy 18th Birthday Ayisha! ❤️🥳\n\nAaj tui ekta notun ador-er bochor e pa rakhli — officially adult! 🌟 Tor jiboner protita din hok hashi 😊, shanti 🌸 ar onek safollo ✨. Tor sob shopno ekdin nischoy puron hok 🌈💫.\n\nAmader bondhutta ta amar kache onek special. Jotoi din jak, tui amar best friend thakbi always. 🫂✨\n\nOnek onek shuvo kamona roilo tor jonno! 💫🎁🎈\n\nHappy Birthday abar o! 🎂🥳\n\n— With Love, Your Name 💙"
+  };
+</script>
+<!-- ===================== END OF EDIT SECTION ===================== -->
+
+<!-- Ambient canvas layers, shared across every scene -->
+<canvas id="star-canvas" aria-hidden="true"></canvas>
+<div id="floating-hearts" aria-hidden="true"></div>
+
+<!-- Progress dots -->
+<nav class="scene-nav" id="scene-nav" aria-label="Section progress">
+  <span class="dot" data-target="scene-1"></span>
+  <span class="dot" data-target="scene-2"></span>
+  <span class="dot" data-target="scene-3"></span>
+  <span class="dot" data-target="scene-4"></span>
+  <span class="dot" data-target="scene-5"></span>
+  <span class="dot" data-target="scene-6"></span>
+  <span class="dot" data-target="scene-7"></span>
+</nav>
+
+<!-- Music toggle -->
+<button id="music-toggle" class="music-toggle" aria-label="Toggle background music" hidden>
+  <span class="music-bars"><i></i><i></i><i></i></span>
+</button>
+<audio id="bg-audio" loop preload="none"></audio>
+
+<main>
+
+  <!-- ============================= SCENE 1 — LOCK SCREEN ============================= -->
+  <section id="scene-1" class="scene lock-screen">
+    <div class="shooting-stars" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>
+
+    <div class="lock-content">
+      <p class="lock-eyebrow">for <span id="lock-name">Ayisha</span></p>
+      <h1 class="lock-title">A gift is waiting for you<span class="heart-accent">❤️</span></h1>
+      <button id="open-gift-btn" class="glow-btn ripple-btn">
+        <span>Open Your Gift</span>
+        <span class="btn-emoji">🎁</span>
+      </button>
+    </div>
+
+    <div class="scroll-hint" aria-hidden="true">
+      <span></span>
+    </div>
+  </section>
+
+  <!-- ============================= SCENE 2 — GIFT OPENING ============================= -->
+  <section id="scene-2" class="scene gift-scene">
+    <div class="gift-wrap">
+      <div class="gift-instruction" id="gift-instruction">tap the gift</div>
+
+      <div id="gift-box" class="gift-box" role="button" tabindex="0" aria-label="Open the gift box">
+        <div class="gift-light" aria-hidden="true"></div>
+        <div class="gift-lid">
+          <div class="gift-bow">
+            <span></span><span></span>
+            <div class="bow-knot"></div>
+          </div>
+        </div>
+        <div class="gift-base">
+          <div class="ribbon-vertical"></div>
+        </div>
+      </div>
+
+      <div class="sparkle-field" id="gift-sparkles" aria-hidden="true"></div>
+    </div>
+
+    <div class="reveal-title-wrap">
+      <h2 class="reveal-title" id="reveal-title">
+        Happy <span class="age-num" id="age-num">18</span><sup>th</sup> Birthday,<br />
+        <span class="didi-word">Ayisha</span> <span class="cake-emoji">🎂</span>
+      </h2>
+      <button class="next-btn" id="next-gift" data-next-btn>
+        <span>Next</span><span class="arrow">→</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================= SCENE 3 — MEMORY GALLERY ============================= -->
+  <section id="scene-3" class="scene gallery-scene">
+    <div class="scene-heading reveal-on-scroll">
+      <p class="scene-eyebrow">Moments</p>
+      <h2>Every Frame With You</h2>
+    </div>
+
+    <div class="gallery-grid" id="gallery-grid">
+      <!-- Photo tiles are generated by script.js from GIFT_CONFIG.photos -->
+    </div>
+
+    <button class="next-btn" data-next-btn>
+      <span>Next</span><span class="arrow">→</span>
+    </button>
+  </section>
+
+  <!-- Fullscreen lightbox for gallery -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close preview">✕</button>
+    <button class="lightbox-arrow lightbox-prev" id="lightbox-prev" aria-label="Previous photo">‹</button>
+    <div class="lightbox-stage">
+      <img id="lightbox-img" src="" alt="" />
+    </div>
+    <button class="lightbox-arrow lightbox-next" id="lightbox-next" aria-label="Next photo">›</button>
+  </div>
+
+  <!-- ============================= SCENE 4 — HANDWRITTEN LETTER ============================= -->
+  <section id="scene-4" class="scene letter-scene">
+    <div class="scene-heading reveal-on-scroll">
+      <p class="scene-eyebrow">A Letter</p>
+      <h2>From My Heart To Yours</h2>
+    </div>
+
+    <div class="letter-paper reveal-on-scroll">
+      <div class="paper-texture" aria-hidden="true"></div>
+      <p class="letter-body" id="letter-body"></p>
+      <p class="letter-sign">— <span id="letter-from">Your Name</span></p>
+    </div>
+
+    <button class="next-btn" data-next-btn>
+      <span>Next</span><span class="arrow">→</span>
+    </button>
+  </section>
+
+  <!-- ============================= SCENE 5 — WISHES ============================= -->
+  <section id="scene-5" class="scene wishes-scene">
+    <div class="scene-heading reveal-on-scroll">
+      <p class="scene-eyebrow">Wishes</p>
+      <h2>Today And Always</h2>
+    </div>
+
+    <div class="wishes-grid">
+      <article class="wish-card reveal-on-scroll">
+        <span class="wish-icon">❤️</span>
+        <h3>Stay Happy</h3>
+      </article>
+      <article class="wish-card reveal-on-scroll">
+        <span class="wish-icon">🌸</span>
+        <h3>Stay Healthy</h3>
+      </article>
+      <article class="wish-card reveal-on-scroll">
+        <span class="wish-icon">✨</span>
+        <h3>Dream Big</h3>
+      </article>
+      <article class="wish-card reveal-on-scroll">
+        <span class="wish-icon">😊</span>
+        <h3>Keep Smiling</h3>
+      </article>
+    </div>
+
+    <button class="next-btn" data-next-btn>
+      <span>Next</span><span class="arrow">→</span>
+    </button>
+  </section>
+
+  <!-- ============================= SCENE 6 — BIRTHDAY CAKE ============================= -->
+  <section id="scene-6" class="scene cake-scene">
+    <div class="scene-heading reveal-on-scroll">
+      <p class="scene-eyebrow">One More Thing</p>
+      <h2 id="cake-heading">FUU DE AR TAP KAR ✨</h2>
+    </div>
+
+    <div class="cake-wrap">
+      <div id="cake" class="cake" role="button" tabindex="0" aria-label="Blow out the candles">
+        <div class="cake-flames">
+          <div class="flame"></div>
+          <div class="flame"></div>
+          <div class="flame"></div>
+        </div>
+        <div class="cake-candles">
+          <div class="candle"></div>
+          <div class="candle"></div>
+          <div class="candle"></div>
+        </div>
+        <div class="cake-tier cake-tier-top">
+          <div class="frosting-drip"></div>
+        </div>
+        <div class="cake-tier cake-tier-bottom">
+          <div class="cake-decor"></div>
+        </div>
+        <div class="cake-plate"></div>
+      </div>
+      <p class="cake-hint" id="cake-hint">tap the cake to blow out the candles</p>
+
+      <button class="next-btn" id="next-cake" data-next-btn>
+        <span>Next</span><span class="arrow">→</span>
+      </button>
+    </div>
+
+    <div class="fireworks-field" id="fireworks-field" aria-hidden="true"></div>
+    <div class="balloon-field" id="balloon-field" aria-hidden="true"></div>
+  </section>
+
+  <!-- ============================= FINAL SCENE ============================= -->
+  <section id="scene-7" class="scene final-scene">
+    <div class="final-glow" aria-hidden="true"></div>
+    <div class="final-content reveal-on-scroll">
+      <p class="final-line">No matter what life brings…</p>
+      <p class="final-line final-line-strong">you'll always be my <span class="didi-word">best friend</span>. <span class="heart-accent">❤️</span></p>
+      <div class="final-signature">
+        <span>— With Love,</span>
+        <span class="signature-name" id="signature-name">Your Name</span>
+      </div>
+      <button class="replay-btn" id="replay-btn">↺ Watch it again</button>
+    </div>
+  </section>
+
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
