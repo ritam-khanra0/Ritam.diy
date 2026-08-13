@@ -1,5 +1,5 @@
 /* =====================================================================
-   RUPSA'S BIRTHDAY — SCRIPT
+   AYISHA'S 18TH BIRTHDAY — SCRIPT
    All interactivity, animation, and content injection lives here.
    Personalize the site by editing window.GIFT_CONFIG at the top of index.html.
 ===================================================================== */
@@ -14,7 +14,10 @@
      buttons/taps instead of scrolling. Exactly one .scene has
      .active at a time.
   =================================================================== */
-  const SCENE_ORDER = ["scene-1", "scene-2", "scene-3", "scene-4", "scene-5", "scene-6", "scene-7"];
+  const SCENE_ORDER = [
+    "scene-1", "scene-2", "scene-3", "scene-4", "scene-5",
+    "scene-6", "scene-7", "scene-8", "scene-9",
+  ];
   let currentStep = 0;
 
   function showScene(index) {
@@ -45,16 +48,24 @@
   }
 
   // Scene-specific one-time behavior triggered the moment a scene becomes active.
-  const sceneEnterState = { letterTyped: false };
+  const sceneEnterState = { letterTyped: false, countdownStarted: false, quizStarted: false };
   function runSceneEnterHooks(sceneId) {
-    if (sceneId === "scene-4" && !sceneEnterState.letterTyped) {
+    if (sceneId === "scene-2" && !sceneEnterState.countdownStarted) {
+      sceneEnterState.countdownStarted = true;
+      startCountdown();
+    }
+    if (sceneId === "scene-5" && !sceneEnterState.letterTyped) {
       sceneEnterState.letterTyped = true;
-      const nextBtn = document.querySelector("#scene-4 .next-btn");
+      const nextBtn = document.querySelector("#scene-5 .next-btn");
       typeLetter(document.getElementById("letter-body"), letterState.fullText, () => {
         if (nextBtn) nextBtn.classList.add("show");
       });
     }
-    if (sceneId === "scene-3" || sceneId === "scene-5") {
+    if (sceneId === "scene-6" && !sceneEnterState.quizStarted) {
+      sceneEnterState.quizStarted = true;
+      startQuiz();
+    }
+    if (sceneId === "scene-4" || sceneId === "scene-7") {
       const nextBtn = document.querySelector(`#${sceneId} .next-btn`);
       if (nextBtn) setTimeout(() => nextBtn.classList.add("show"), 700);
     }
@@ -68,6 +79,10 @@
       dot.addEventListener("click", () => showScene(i));
     });
     document.getElementById("replay-btn")?.addEventListener("click", () => {
+      sceneEnterState.letterTyped = false;
+      sceneEnterState.countdownStarted = false;
+      sceneEnterState.quizStarted = false;
+      resetQuiz();
       showScene(0);
     });
     // Optional: arrow keys move forward/back on desktop
@@ -154,19 +169,34 @@
       const notes = [523.25, 659.25, 783.99, 1046.5];
       notes.forEach((freq, i) => this.tone(freq, i * 0.09, 0.45, { type: "sine", peak: 0.1 }));
     },
+    playClickTick() {
+      const ctx = this.ensure();
+      if (!ctx) return;
+      const t0 = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(880, t0);
+      gain.gain.setValueAtTime(0.1, t0);
+      gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.08);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t0);
+      osc.stop(t0 + 0.1);
+    },
   };
 
   /* ===================================================================
      0. INJECT CONFIG INTO THE PAGE
   =================================================================== */
   function injectConfig() {
-    const name = CONFIG.recipientName || "Rupsa";
-    const age = CONFIG.age ?? 22;
+    const name = CONFIG.recipientName || "Ayisha";
+    const age = CONFIG.age ?? 18;
     const from = CONFIG.fromName || "Ritam";
 
-    document.title = `Happy Birthday, ${name} 🎂`;
+    document.title = `Happy ${age}th Birthday, ${name} 🎂`;
     setText("lock-name", name);
     setText("age-num", age);
+    setText("reveal-name", name);
     setText("letter-from", from);
     setText("signature-name", from);
 
@@ -289,7 +319,7 @@
     function spawnHeart() {
       const heart = document.createElement("span");
       heart.className = "floating-heart";
-      heart.textContent = Math.random() > 0.5 ? "❤️" : "💛";
+      heart.textContent = Math.random() > 0.5 ? "🎈" : "✨";
       heart.style.left = Math.random() * 100 + "vw";
       heart.style.setProperty("--drift", (Math.random() * 80 - 40) + "px");
       heart.style.animationDuration = 9 + Math.random() * 8 + "s";
@@ -303,7 +333,7 @@
   }
 
   /* ===================================================================
-     5. SCENE 1 — LOCK SCREEN: ripple button + open gift trigger
+     3. SCENE 1 — LOCK SCREEN: ripple button + open gift trigger
   =================================================================== */
   function initLockScreen() {
     const btn = document.getElementById("open-gift-btn");
@@ -319,17 +349,80 @@
     const size = Math.max(rect.width, rect.height) * 1.4;
     ripple.className = "ripple";
     ripple.style.width = ripple.style.height = size + "px";
-    ripple.style.left = (e.clientX - rect.left - size / 2) + "px";
-    ripple.style.top = (e.clientY - rect.top - size / 2) + "px";
+    const clientX = e.clientX ?? (e.touches && e.touches[0] ? e.touches[0].clientX : rect.left + rect.width / 2);
+    const clientY = e.clientY ?? (e.touches && e.touches[0] ? e.touches[0].clientY : rect.top + rect.height / 2);
+    ripple.style.left = (clientX - rect.left - size / 2) + "px";
+    ripple.style.top = (clientY - rect.top - size / 2) + "px";
     btn.appendChild(ripple);
     setTimeout(() => ripple.remove(), 700);
   }
 
   /* ===================================================================
-     6. SCENE 2 — GIFT BOX: open, confetti, hearts, sparkles, reveal title
+     4. SCENE 2 — LIVE COUNTDOWN TO HER BIRTHDAY
+  =================================================================== */
+  let countdownTimer = null;
+  function startCountdown() {
+    const heading = document.getElementById("countdown-heading");
+    const note = document.getElementById("countdown-note");
+    const grid = document.getElementById("countdown-grid");
+    const nextBtn = document.querySelector("#scene-2 .next-btn");
+    const dEl = document.getElementById("cd-days");
+    const hEl = document.getElementById("cd-hours");
+    const mEl = document.getElementById("cd-mins");
+    const sEl = document.getElementById("cd-secs");
+
+    const rawTarget = CONFIG.birthdayDate;
+    const target = rawTarget ? new Date(rawTarget).getTime() : NaN;
+
+    function pad(n) { return String(n).padStart(2, "0"); }
+
+    function celebrateArrival() {
+      grid.classList.add("arrived");
+      heading.textContent = "It's Here! 🎉";
+      note.textContent = "happy 18th birthday — today is the day ✨";
+      dEl.textContent = hEl.textContent = mEl.textContent = sEl.textContent = "00";
+      launchConfetti(45);
+      if (nextBtn) nextBtn.classList.add("show");
+      clearInterval(countdownTimer);
+    }
+
+    if (isNaN(target)) {
+      // No valid date configured — skip the ticking display gracefully.
+      heading.textContent = "The Big Day";
+      note.textContent = "wishing you the happiest 18th ✨";
+      grid.style.display = "none";
+      if (nextBtn) nextBtn.classList.add("show");
+      return;
+    }
+
+    function tick() {
+      const now = Date.now();
+      const diff = target - now;
+      if (diff <= 0) {
+        celebrateArrival();
+        return;
+      }
+      const totalSec = Math.floor(diff / 1000);
+      const days = Math.floor(totalSec / 86400);
+      const hours = Math.floor((totalSec % 86400) / 3600);
+      const mins = Math.floor((totalSec % 3600) / 60);
+      const secs = totalSec % 60;
+      dEl.textContent = pad(days);
+      hEl.textContent = pad(hours);
+      mEl.textContent = pad(mins);
+      sEl.textContent = pad(secs);
+    }
+
+    tick();
+    countdownTimer = setInterval(tick, 1000);
+    setTimeout(() => { if (nextBtn) nextBtn.classList.add("show"); }, 1200);
+  }
+
+  /* ===================================================================
+     5. SCENE 3 — GIFT BOX: open, confetti, hearts, sparkles, reveal title
   =================================================================== */
   function initGiftBox() {
-    const scene = document.getElementById("scene-2");
+    const scene = document.getElementById("scene-3");
     const box = document.getElementById("gift-box");
     const sparkleField = document.getElementById("gift-sparkles");
     const audioEl = document.getElementById("bg-audio");
@@ -345,12 +438,9 @@
       launchConfetti(60);
       burstHeartsFrom(box);
 
-      // --- গিফট ট্যাপ করলে গান চালু করার কোড ---
       if (audioEl && audioEl.src) {
-        audioEl.play().catch(err => console.log("Audio play blocked:", err));
-        if (toggleBtn) {
-          toggleBtn.classList.add("playing");
-        }
+        audioEl.play().catch((err) => console.log("Audio play blocked:", err));
+        if (toggleBtn) toggleBtn.classList.add("playing");
       }
 
       const nextBtn = document.getElementById("next-gift");
@@ -380,12 +470,17 @@
     }
   }
 
-  function launchConfetti(count) {
-    const colors = ["#e8b95b", "#ff8aa3", "#f6efe2", "#f4d998", "#ffb3c6"];
+  function launchConfetti(count, originX = null, originY = null) {
+    const colors = ["#e8b95b", "#ff8aa3", "#f6efe2", "#f4d998", "#ffb3c6", "#7fd9c4"];
     for (let i = 0; i < count; i++) {
       const piece = document.createElement("div");
       piece.className = "confetti-piece";
-      piece.style.left = Math.random() * 100 + "vw";
+      const startLeft = originX !== null ? originX + (Math.random() * 60 - 30) : Math.random() * window.innerWidth;
+      piece.style.left = startLeft + "px";
+      if (originY !== null) {
+        piece.style.top = originY + "px";
+        piece.style.setProperty("--fall-dist", (window.innerHeight - originY + 60) + "px");
+      }
       piece.style.background = colors[Math.floor(Math.random() * colors.length)];
       piece.style.setProperty("--rot", (Math.random() * 720 - 360) + "deg");
       piece.style.animationDuration = 2.5 + Math.random() * 2 + "s";
@@ -400,7 +495,7 @@
     for (let i = 0; i < 14; i++) {
       const heart = document.createElement("span");
       heart.className = "floating-heart";
-      heart.textContent = "❤️";
+      heart.textContent = "🎉";
       heart.style.left = 44 + Math.random() * 12 + "vw";
       heart.style.setProperty("--drift", (Math.random() * 120 - 60) + "px");
       heart.style.animationDuration = 4 + Math.random() * 3 + "s";
@@ -411,7 +506,7 @@
   }
 
   /* ===================================================================
-     7. SCENE 3 — GALLERY LIGHTBOX with swipe support
+     6. SCENE 4 — GALLERY LIGHTBOX with swipe support
   =================================================================== */
   let lightboxIndex = 0;
   function openLightbox(index) {
@@ -478,7 +573,7 @@
   }
 
   /* ===================================================================
-     8. SCENE 4 — LETTER TYPING ANIMATION (triggers on scroll into view)
+     7. SCENE 5 — LETTER TYPING ANIMATION
   =================================================================== */
   const letterState = { fullText: "" };
 
@@ -507,7 +602,128 @@
   }
 
   /* ===================================================================
-     9. SCENE 5 — WISH CARDS: touch animation for mobile
+     8. SCENE 6 — FRIENDSHIP QUIZ (tap-through cards, score-agnostic finish)
+  =================================================================== */
+  let quizIndex = 0;
+  let quizAnswered = false;
+  let quizScore = 0;
+
+  function getQuizQuestions() {
+    const list = Array.isArray(CONFIG.quiz) ? CONFIG.quiz : [];
+    return list.filter((q) => q && q.question && Array.isArray(q.options) && q.options.length >= 2);
+  }
+
+  function buildQuizProgress(total) {
+    const bar = document.getElementById("quiz-progress");
+    bar.innerHTML = "";
+    for (let i = 0; i < total; i++) {
+      const seg = document.createElement("span");
+      seg.className = "quiz-progress-seg";
+      bar.appendChild(seg);
+    }
+  }
+
+  function updateQuizProgress() {
+    document.querySelectorAll(".quiz-progress-seg").forEach((seg, i) => {
+      seg.classList.toggle("done", i < quizIndex);
+      seg.classList.toggle("current", i === quizIndex);
+    });
+  }
+
+  function startQuiz() {
+    const questions = getQuizQuestions();
+    const nextBtn = document.getElementById("next-quiz");
+
+    if (questions.length === 0) {
+      document.getElementById("quiz-question").textContent = "Quiz coming soon — add questions in GIFT_CONFIG!";
+      document.getElementById("quiz-options").innerHTML = "";
+      if (nextBtn) nextBtn.classList.add("show");
+      return;
+    }
+
+    buildQuizProgress(questions.length);
+    quizIndex = 0;
+    quizScore = 0;
+    renderQuizQuestion();
+  }
+
+  function resetQuiz() {
+    quizIndex = 0;
+    quizScore = 0;
+    quizAnswered = false;
+    document.getElementById("quiz-card").hidden = false;
+    document.getElementById("quiz-result").hidden = true;
+    const nextBtn = document.getElementById("next-quiz");
+    if (nextBtn) nextBtn.classList.remove("show");
+  }
+
+  function renderQuizQuestion() {
+    const questions = getQuizQuestions();
+    const q = questions[quizIndex];
+    quizAnswered = false;
+    updateQuizProgress();
+
+    const questionEl = document.getElementById("quiz-question");
+    const optionsEl = document.getElementById("quiz-options");
+    const feedbackEl = document.getElementById("quiz-feedback");
+
+    questionEl.textContent = q.question;
+    feedbackEl.textContent = "";
+    feedbackEl.classList.remove("show");
+    optionsEl.innerHTML = "";
+
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "quiz-option";
+      btn.textContent = opt;
+      btn.addEventListener("click", () => handleQuizAnswer(i, q, feedbackEl, optionsEl));
+      optionsEl.appendChild(btn);
+    });
+  }
+
+  function handleQuizAnswer(chosenIndex, q, feedbackEl, optionsEl) {
+    if (quizAnswered) return;
+    quizAnswered = true;
+    SFX.playClickTick();
+
+    const correct = chosenIndex === q.correct;
+    if (correct) quizScore++;
+
+    Array.from(optionsEl.children).forEach((btn, i) => {
+      btn.classList.add("locked");
+      if (i === q.correct) btn.classList.add("correct");
+      else if (i === chosenIndex) btn.classList.add("wrong");
+    });
+
+    feedbackEl.textContent = correct ? "Yes! Exactly right. 🎯" : "Close — but that's okay! 😄";
+    feedbackEl.classList.add("show");
+
+    const questions = getQuizQuestions();
+    setTimeout(() => {
+      if (quizIndex < questions.length - 1) {
+        quizIndex++;
+        renderQuizQuestion();
+      } else {
+        finishQuiz(questions.length);
+      }
+    }, 1100);
+  }
+
+  function finishQuiz(total) {
+    updateQuizProgress();
+    document.getElementById("quiz-card").hidden = true;
+    const resultEl = document.getElementById("quiz-result");
+    resultEl.hidden = false;
+    document.getElementById("quiz-result-title").textContent = `${quizScore} / ${total} — Nice!`;
+    launchConfetti(30);
+    SFX.playCheerChime();
+    const nextBtn = document.getElementById("next-quiz");
+    if (nextBtn) setTimeout(() => nextBtn.classList.add("show"), 500);
+  }
+
+  /* ===================================================================
+     9. SCENE 7 — WISH CARDS: touch animation for mobile
   =================================================================== */
   function initWishCards() {
     document.querySelectorAll(".wish-card").forEach((card) => {
@@ -519,7 +735,7 @@
   }
 
   /* ===================================================================
-     10. SCENE 6 — CAKE: blow out candles, confetti + fireworks, wish text
+     10. SCENE 8 — CAKE: blow out candles, confetti + fireworks, wish text
   =================================================================== */
   function initCake() {
     const cake = document.getElementById("cake");
@@ -596,7 +812,38 @@
   }
 
   /* ===================================================================
-     11. MUSIC TOGGLE
+     11. SCENE 9 — FINAL SCENE: tap-anywhere confetti cannon
+  =================================================================== */
+  function initTapConfetti() {
+    const scene = document.querySelector("[data-tap-confetti]");
+    if (!scene) return;
+    const hint = document.getElementById("tap-hint");
+    let tapCount = 0;
+
+    function burst(x, y) {
+      launchConfetti(18, x, y);
+      SFX.playPop();
+      tapCount++;
+      if (tapCount === 1 && hint) {
+        setTimeout(() => hint.classList.add("faded"), 2200);
+      }
+    }
+
+    scene.addEventListener("click", (e) => {
+      // Ignore taps on the replay button so it stays reliably clickable.
+      if (e.target.closest(".replay-btn")) return;
+      burst(e.clientX, e.clientY);
+    });
+
+    scene.addEventListener("touchstart", (e) => {
+      if (e.target.closest(".replay-btn")) return;
+      const t = e.touches[0];
+      if (t) burst(t.clientX, t.clientY);
+    }, { passive: true });
+  }
+
+  /* ===================================================================
+     12. MUSIC TOGGLE
   =================================================================== */
   function initMusic() {
     const btn = document.getElementById("music-toggle");
@@ -626,6 +873,7 @@
     initLightbox();
     initWishCards();
     initCake();
+    initTapConfetti();
     initMusic();
     showScene(0);
   });
